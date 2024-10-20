@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopper Management</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        h1 {
+            color: #007bff;
+        }
+
+        #shopperForm {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #shopperData {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mt-5">Shopper Management Form</h1>
+        <form id="shopperForm" class="mt-4">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email Address (Required)</label>
+                <input type="email" class="form-control" id="email" required>
+                <div class="invalid-feedback">Please enter a valid email.</div>
+            </div>
+            <div class="mb-3">
+                <label for="name" class="form-label">Full Name (Required)</label>
+                <input type="text" class="form-control" id="name" required>
+                <div class="invalid-feedback">Please enter your name.</div>
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone Number (Optional)</label>
+                <input type="tel" class="form-control" id="phone" placeholder="123-456-7890">
+            </div>
+            <div class="mb-3">
+                <label for="age" class="form-label">Age (Required)</label>
+                <input type="number" class="form-control" id="age" required>
+                <div class="invalid-feedback">Please enter your age.</div>
+            </div>
+            <div class="mb-3">
+                <label for="address" class="form-label">Address (Required)</label>
+                <textarea class="form-control" id="address" rows="3" required></textarea>
+                <div class="invalid-feedback">Please enter your address.</div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <div id="shopperData" class="mt-4"></div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.getElementById('shopperForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Perform form validation
+            const email = document.getElementById('email');
+            const name = document.getElementById('name');
+            const phone = document.getElementById('phone');
+            const age = document.getElementById('age');
+            const address = document.getElementById('address');
+            
+            if (!email.checkValidity() || !name.checkValidity() || !age.checkValidity() || !address.checkValidity()) {
+                email.classList.add('is-invalid');
+                name.classList.add('is-invalid');
+                age.classList.add('is-invalid');
+                address.classList.add('is-invalid');
+                return;
+            }
+
+            // Clear validation messages
+            email.classList.remove('is-invalid');
+            name.classList.remove('is-invalid');
+            age.classList.remove('is-invalid');
+            address.classList.remove('is-invalid');
+
+            // Create JSON object with shopper details
+            const shopperDetails = {
+                shopperEmail: email.value,
+                shopperName: name.value,
+                shopperContact: phone.value,
+                shopperAge: age.value,
+                shopperAddress: address.value
+            };
+
+            // Display shopper details in JSON format
+            document.getElementById('shopperData').innerHTML = `
+                <h3>Shopper Details</h3>
+                <pre>${JSON.stringify(shopperDetails, null, 2)}</pre>
+            `;
+
+            // Clear form after submission
+            email.value = '';
+            name.value = '';
+            phone.value = '';
+            age.value = '';
+            address.value = '';
+        });
+    </script>
+</body>
+</html>
