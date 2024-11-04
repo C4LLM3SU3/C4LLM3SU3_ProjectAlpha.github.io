@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery Library -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="product.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+            <a class="navbar-brand" href="index.html">Storefront</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="product.html">Product Management</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <h1 class="text-center mb-4">Product Management Form</h1>
+
+        <!-- Product Form -->
+        <form id="productForm" class="form-container">
+            <div class="mb-3">
+                <label for="productId" class="form-label">Product ID (Required)</label>
+                <input type="text" class="form-control" id="productId" required>
+                <div class="invalid-feedback">Please enter a product ID.</div>
+            </div>
+            <div class="mb-3">
+                <label for="productDescription" class="form-label">Product Description (Required)</label>
+                <input type="text" class="form-control" id="productDescription" required>
+                <div class="invalid-feedback">Please enter a product description.</div>
+            </div>
+            <div class="mb-3">
+                <label for="productCategory" class="form-label">Product Category (Required)</label>
+                <select id="productCategory" class="form-select" required>
+                    <option value="">Select Category</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Clothing">Clothing</option>
+                    <option value="Home">Home</option>
+                </select>
+                <div class="invalid-feedback">Please select a category.</div>
+            </div>
+            <div class="mb-3">
+                <label for="productUnit" class="form-label">Unit of Measure (Required)</label>
+                <select id="productUnit" class="form-select" required>
+                    <option value="">Select Unit</option>
+                    <option value="Piece">Piece</option>
+                    <option value="Kilogram">Kilogram</option>
+                    <option value="Liter">Liter</option>
+                </select>
+                <div class="invalid-feedback">Please select a unit of measure.</div>
+            </div>
+            <div class="mb-3">
+                <label for="productPrice" class="form-label">Price (Required)</label>
+                <input type="number" class="form-control" id="productPrice" required>
+                <div class="invalid-feedback">Please enter a price.</div>
+            </div>
+            <div class="mb-3">
+                <label for="productWeight" class="form-label">Weight (Optional)</label>
+                <input type="number" class="form-control" id="productWeight">
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Submit</button>
+        </form>
+
+        <!-- Display Product JSON Data -->
+        <div id="productData" class="mt-4"></div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#productForm').on('submit', function(event) {
+                event.preventDefault();
+
+                // Collect form data and create JSON object
+                const productDetails = {
+                    productId: $('#productId').val(),
+                    productDescription: $('#productDescription').val(),
+                    productCategory: $('#productCategory').val(),
+                    productUnit: $('#productUnit').val(),
+                    productPrice: parseFloat($('#productPrice').val()).toFixed(2),
+                    productWeight: $('#productWeight').val() || "N/A"
+                };
+
+                // Display JSON data
+                $('#productData').html(`
+                    <h3>Product Details</h3>
+                    <pre>${JSON.stringify(productDetails, null, 2)}</pre>
+                `);
+
+                // Clear the form after submission
+                $('#productForm')[0].reset();
+            });
+
+            // jQuery example: search and update JSON document
+            $('#productCategory').on('change', function() {
+                const selectedCategory = $(this).val();
+                $('#productData').html(`
+                    <h5>Filtered by Category: ${selectedCategory}</h5>
+                `);
+            });
+        });
+    </script>
+</body>
+</html>
