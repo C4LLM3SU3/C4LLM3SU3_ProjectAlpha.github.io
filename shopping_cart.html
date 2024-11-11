@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery Library -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container my-5">
+        <!-- Navigation Links -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+            <a class="navbar-brand" href="index.html">Storefront</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="product.html">Product Management</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="shopping_cart.html">Shopping Cart</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <h1 class="text-center mb-4">Shopping Cart</h1>
+
+        <!-- Product Selection Dropdown -->
+        <div class="mb-3">
+            <label for="productDropdown" class="form-label">Select a Product</label>
+            <div class="d-flex">
+                <select id="productDropdown" class="form-select me-2">
+                    <option value="" disabled selected>Select a product</option>
+                    <option value="1">Laptop - $1200</option>
+                    <option value="2">Phone - $800</option>
+                    <option value="3">Headphones - $200</option>
+                    <option value="4">Smartwatch - $250</option>
+                    <option value="5">Tablet - $500</option>
+                </select>
+                <button id="addButton" class="btn btn-primary">Add to Cart</button>
+            </div>
+        </div>
+
+        <!-- Shopping Cart Table -->
+        <h3>Shopping Cart</h3>
+        <table class="table table-striped" id="cartTable">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <!-- Total Price Display -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <h4>Total:</h4>
+            <h4 id="totalPrice">$0.00</h4>
+        </div>
+
+        <!-- Checkout Button and JSON Output -->
+        <button id="checkoutButton" class="btn btn-success mt-3">Checkout</button>
+        <div id="cartJSONOutput" class="mt-3"></div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Product data
+        const products = {
+            '1': { name: 'Laptop', price: 1200 },
+            '2': { name: 'Phone', price: 800 },
+            '3': { name: 'Headphones', price: 200 },
+            '4': { name: 'Smartwatch', price: 250 },
+            '5': { name: 'Tablet', price: 500 }
+        };
+        let cart = [];
+
+        $(document).ready(function() {
+            // Add product to cart
+            $('#addButton').click(function() {
+                const selectedProductId = $('#productDropdown').val();
+                if (selectedProductId && products[selectedProductId]) {
+                    const product = products[selectedProductId];
+                    const existingItem = cart.find(item => item.id === selectedProductId);
+
+                    if (existingItem) {
+                        existingItem.quantity += 1; // Increase quantity if item already in cart
+                    } else {
+                        cart.push({ ...product, id: selectedProductId, quantity: 1 });
+                    }
+                    displayCart(); // Update cart display
+                }
+            });
+
+            // Display cart items and calculate total price
+            function displayCart() {
+                const $cartTableBody = $('#cartTable tbody');
+                $cartTableBody.empty();
+                let total = 0;
+
+                cart.forEach((item, index) => {
+                    const itemTotal = item.price * item.quantity;
+                    total += itemTotal;
+
+                    $cartTableBody.append(`
+                        <tr>
+                            <td>${item.name}</td>
+                            <td>$${item.price.toFixed(2)}</td>
+                            <td>
+                                <input type="number" class="form-control quantity-input" data-index="${index}" value="${item.quantity}" min="1">
+                            </td>
+                            <td>$${itemTotal.toFixed(2)}</td>
+                            <td>
+                                <button class="btn btn-sm btn-danger remove-item" data-index="${index}">Remove</button>
+                            </td>
+                        </tr>
+                    `);
+                });
+
+                $('#totalPrice').text(`$${total.toFixed(2)}`);
+            }
+
+            // Update quantity
+            $(document).on('change', '.quantity-input', function() {
+                const index = $(this).data('index');
+                const newQuantity = parseInt($(this).val());
+
+                if (newQuantity > 0) {
+                    cart[index].quantity = newQuantity;
+                    displayCart(); // Update cart display and totals
+                }
+            });
+
+            // Remove product from cart
+            $(document).on('click', '.remove-item', function() {
+                const index = $(this).data('index');
+                cart.splice(index, 1); // Remove item from cart
+                displayCart(); // Update cart display
+            });
+
+            // Display JSON and Send AJAX on Checkout
+            $('#checkoutButton').click(function() {
+                // Display cart JSON
+                $('#cartJSONOutput').html(`
+                    <h3>Cart JSON</h3>
+                    <pre>${JSON.stringify(cart, null, 2)}</pre>
+                `);
+
+                // AJAX call to send cart JSON to API
+                $.ajax({
+                    url: 'https://your-api-endpoint.com/checkout', // Placeholder URL
+                    method: 'POST',
+                    data: JSON.stringify(cart),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        alert('Checkout successful!');
+                    },
+                    error: function() {
+                        alert('Checkout failed!');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
